@@ -1,15 +1,45 @@
 import "cdktf/lib/testing/adapters/jest"; // Load types for expect matchers
-// import { Testing } from "cdktf";
+import { Testing } from "cdktf";
+import { MyConstruct } from "../main";
+import { PublicIp } from "@cdktf/provider-azurerm";
 
 describe("My CDKTF Application", () => {
   // The tests below are example tests, you can find more information at
   // https://cdk.tf/testing
-  it.todo("should be tested");
+  it("snapshot test", () => {
+    expect(
+      Testing.synthScope((scope) => {
+        new MyConstruct(scope, "myConstruct");
+      })
+    ).toMatchInlineSnapshot(`
+"{
+  \\"resource\\": {
+    \\"azurerm_public_ip\\": {
+      \\"myConstruct_publicIp_A67DE044\\": {
+        \\"allocation_method\\": \\"Dynamic\\",
+        \\"location\\": \\"westus\\",
+        \\"name\\": \\"my-public-ip\\",
+        \\"resource_group_name\\": \\"my-resource-group\\"
+      }
+    }
+  }
+}"
+`);
+  });
+
+  it("unit test", () => {
+    expect(
+      Testing.synthScope((scope) => {
+        new MyConstruct(scope, "myConstruct");
+      })
+    ).toHaveResource(PublicIp);
+  });
 
   // // All Unit testst test the synthesised terraform code, it does not create real-world resources
   // describe("Unit testing using assertions", () => {
   //   it("should contain a resource", () => {
   //     // import { Image,Container } from "./.gen/providers/docker"
+
   //     expect(
   //       Testing.synthScope((scope) => {
   //         new MyApplicationsAbstraction(scope, "my-app", {});
